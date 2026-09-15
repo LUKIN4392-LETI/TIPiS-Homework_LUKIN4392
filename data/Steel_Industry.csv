@@ -1,1 +1,55 @@
+!git clone https://github.com/LUKIN4392-LETI/TIPiS-Homework_LUKIN4392.git
+%cd TIPiS-Homework_LUKIN4392
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from pathlib import Path
+
+DATA = Path("data")
+plt.rcParams["figure.figsize"] = (11, 5)
+
+EXPECTED = {
+    1: (35040, 11),
+    2: [3.17, 4.0, 3.24, 3.31, 3.82, 3.28, 3.6, 3.6, 3.28, 3.78],
+    3: 35040,
+    4: (-28.9, 37.4),
+    5: ["date", "Usage_kWh", "Lagging_Current_Reactive_Power_kVarh",
+        "Leading_Current_Reactive_Power_kVarh", "CO2_tCO2_",
+        "Lagging_Current_Power_Factor", "Leading_Current_Power_Factor"],
+    6: [-12.3, -9.8, -9.7],
+}
+
+
+def _brief(v):
+    if isinstance(v, (pd.Series, np.ndarray)):
+        return list(np.round(np.asarray(v, dtype=object), 4)) if v.dtype == object else v.tolist()
+    return v
+
+
+def check(task, value):
+    expected = EXPECTED[task]
+    try:
+        if value is None or (isinstance(value, type(Ellipsis))):
+            print(f"❌ Задание {task}: ответ не заполнен")
+            return
+        if isinstance(expected, tuple) and not isinstance(value, (list, np.ndarray, pd.Series)):
+            ok = tuple(np.round(np.array(value, dtype=float), 6)) == tuple(
+                np.round(np.array(expected, dtype=float), 6))
+        elif isinstance(expected, list) and isinstance(expected[0], str):
+            ok = list(value) == expected
+        elif isinstance(expected, list):
+            got = np.asarray(pd.Series(value).tolist(), dtype=float)
+            ok = got.shape == np.array(expected).shape and np.allclose(got, expected)
+        else:
+            ok = np.isclose(float(value), float(expected))
+    except Exception as e:
+        print(f"❌ Задание {task}: не удалось сравнить ответ ({type(e).__name__}: {e})")
+        return
+    print(f"{'✅' if ok else '❌'} Задание {task}: ваш ответ {_brief(value)}")
+    if not ok:
+        print(f"   ожидалось: {expected}")
+
+
+print("Папка с данными найдена:", DATA.exists())
+print("Файлы:", [f.name for f in sorted(DATA.iterdir())])
