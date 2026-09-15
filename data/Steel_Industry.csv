@@ -1,3 +1,7 @@
+!ls -la data/
+!wc -l data/Steel_Industry.csv
+!head -3 data/Steel_Industry.csv
+
 !git clone https://github.com/LUKIN4392-LETI/TIPiS-Homework_LUKIN4392.git
 %cd TIPiS-Homework_LUKIN4392
 
